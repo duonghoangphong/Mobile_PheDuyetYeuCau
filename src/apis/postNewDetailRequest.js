@@ -5,9 +5,7 @@ import Utils from '../app/Utils';
 let PREFIX = 'api/YeuCau/LuuData';
 
 async function postNewDetailRequest(array) {
-  console.log('==> array: ', array);
   let strBody = await JSON.stringify(array);
-  console.log('==> array of apis: ', strBody);
   let res = await Utils.post_apiTokenHeader(PREFIX, strBody, false, false);
   return res;
 }

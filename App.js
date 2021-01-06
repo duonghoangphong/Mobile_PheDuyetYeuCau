@@ -17,7 +17,7 @@ import {
 } from '@react-navigation/drawer';
 
 import 'react-native-gesture-handler';
-
+import DetailsScreen from './src/screen/DetailScreen';
 import SplashScreen from './src/screen/SplashScreen';
 import LoginScreen from './src/screen/LoginScreen';
 import RegisterScreen from './src/screen/RegisterScreen';
@@ -25,6 +25,7 @@ import NewDetailRequestScreen from './src/screen/NewDetailRequestScreen';
 import Main from './src/screen/Main';
 import FlashMessage from 'react-native-flash-message';
 import SearchScreen from './src/screen/SearchScreen';
+import Modal_Fitter from './src/componentCustom/Modal/Modal_Fitter';
 
 const Stack = createStackNavigator();
 
@@ -59,28 +60,19 @@ export default class App extends React.Component {
             }),
           }}
           mode="modal">
-          {/* <Stack.Screen name="Children" component={Children}></Stack.Screen> */}
           <Stack.Screen name="Splash" component={SplashScreen}></Stack.Screen>
           <Stack.Screen name="Login" component={LoginScreen}></Stack.Screen>
-          <Stack.Screen name="Search" component={SearchScreen}></Stack.Screen>
+          <Stack.Screen name="Main" component={Main}></Stack.Screen>
+          <Stack.Screen name="Details" component={DetailsScreen}></Stack.Screen>
+          <Stack.Screen
+            name="Modal_Fitter"
+            component={Modal_Fitter}></Stack.Screen>
           <Stack.Screen
             name="NewDetailRequest"
             component={NewDetailRequestScreen}></Stack.Screen>
-          <Stack.Screen name="Main" component={Main}></Stack.Screen>
-          <Stack.Screen
-            name="Register"
-            component={RegisterScreen}></Stack.Screen>
         </Stack.Navigator>
         <FlashMessage position="top" style={{borderRadius: 10}} />
       </NavigationContainer>
     );
   }
 }
-const Children = () => {
-  return (
-    <Stack.Navigator initialRouteName="Splash" headerMode={'none'}>
-      <Stack.Screen name="Splash" component={SplashScreen}></Stack.Screen>
-      <Stack.Screen name="Login" component={LoginScreen}></Stack.Screen>
-    </Stack.Navigator>
-  );
-};

@@ -21,7 +21,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 import {nGlobalKeys} from '../app/data/globalKey';
 import {ROOTGlobal, AppsetGlobal} from '../app/data/dataGlobal';
-
+import {connected} from '../apis/realtime';
+import {thongBaoConnected} from '../apis/getThongBao';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 const background = require('../assets/background.jpg');
 const logo = require('../assets/logo.png');
 
@@ -72,7 +74,6 @@ function PhanThongTin({temp}) {
 function PhanDangKy({temp}) {
   return <View style={styles.title3}></View>;
 }
-// const [hidePass, setHidePass] = useState(true);
 
 export default class DangNhap extends React.Component {
   constructor(props) {
@@ -80,7 +81,7 @@ export default class DangNhap extends React.Component {
     this.state = {
       data: [],
       hidePass: true,
-      TaiKhoan: 'anhtuan@test',
+      TaiKhoan: 'phong@test',
       MatKhau: '12345678',
     };
   }
@@ -94,35 +95,29 @@ export default class DangNhap extends React.Component {
     if (temp.status == 1) {
       this.setState({data: temp});
       Utils.nsetStore(nGlobalKeys.loginToken, temp.data.Token);
-
       Utils.setGlobal(ROOTGlobal.loginToken, temp.data.Token);
-      Utils.nlog(
-        '==>_token LoginScreen: ',
-        Utils.getGlobal(ROOTGlobal.loginToken),
-      );
-
-      Utils.nsetStore(nGlobalKeys.HoTen, temp.data.TenDayDu);
-      Utils.setGlobal(ROOTGlobal.info, temp.data);
       Utils.nlog('==>Token: ', await Utils.ngetStore(nGlobalKeys.loginToken));
-      this.props.navigation.navigate('Main');
+      this.props.navigation.replace('Main');
+      connected(temp.data.Token);
+      // thongBaoConnected(temp.data.Token);
     } else {
       this.setState({data: []});
+      n;
       showMessage({
         message: 'Sai tài khoản hoặc mật khẩu !',
         type: 'danger',
-        // position: 'center',
       });
     }
-    // Alert.alert('Đăng nhập không thành công?', 'Sai tai khoan hoac mat khau');
   };
   render() {
     return (
-      <View>
+      <KeyboardAwareScrollView
+        keyboardShouldPersistTaps="always"
+        // showsVerticalScrollIndicator={false}
+        // style={{marginTop: 10, paddingHorizontal: 10}}
+      >
         <ImageBackground source={background} style={styles.imagebackground}>
-          {/* Phan Tieu De */}
           <PhanTieuDe></PhanTieuDe>
-          {/* Phan Dang Nhap */}
-          {/* <PhanThongTin temp={this.props}></PhanThongTin> */}
           <View style={styles.title2}>
             <Text style={{textAlign: 'center'}}>
               *Vui lòng sử dụng tài khoản {'\n'}đã đăng ký để đăng nhập
@@ -171,7 +166,7 @@ export default class DangNhap extends React.Component {
             </TouchableOpacity>
           </View>
           {/* <Image
-            // source={require('../assets/vantay.png')}
+            source={require('../assets/vantay.png')}
             style={{
               width: 100,
               height: 80,
@@ -181,7 +176,7 @@ export default class DangNhap extends React.Component {
           {/* Phan dang ky */}
           <PhanDangKy temp={this.props}></PhanDangKy>
         </ImageBackground>
-      </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -194,6 +189,7 @@ const styles = StyleSheet.create({
   imagebackground: {
     width: width,
     height: height,
+    flex: 1,
   },
   title1: {
     alignItems: 'center',
@@ -217,13 +213,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 30,
     textAlign: 'center',
-    // backgroundColor: 'red',
-    // justifyContent: 'center',
     alignItems: 'center',
-    height: '40%',
+    height: '30%',
+    // flex: 1,
   },
   title2_thongtin: {
-    // justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -242,11 +236,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: FontSize.Height(7),
+    marginTop: 20,
   },
   title3: {
     alignItems: 'center',
-    // backgroundColor: 'yellow',
     height: FontSize.Height(30),
     marginTop: 30,
   },
@@ -268,11 +261,9 @@ const styles = StyleSheet.create({
     flex: 2,
     alignItems: 'center',
     paddingVertical: 50,
-    // backgroundColor: 'blue',
   },
   footer: {
     flex: 7,
-    // backgroundColor: 'red',
   },
   textHeader: {
     color: '#fff',
@@ -291,9 +282,7 @@ const styles = StyleSheet.create({
   ContainerDangNhap: {
     borderTopRightRadius: 10,
     borderBottomRightRadius: 30,
-    // height: 320,
     marginBottom: 20,
-    // flex: 7,
   },
   khung: {
     backgroundColor: '#00000080',
@@ -342,12 +331,7 @@ const styles = StyleSheet.create({
     width: 330,
   },
   buttonContainer: {
-    // marginBottom: 80,
-    // height: 60,
-    // marginTop: 20,
     alignItems: 'center',
-    // flex: 1,
-    // backgroundColor: 'green',
   },
   buttonDangnhap: {
     backgroundColor: '#3180CC',
@@ -363,9 +347,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   quenmk: {
-    // flex: 1,
     backgroundColor: 'green',
-    // marginBottom: 100,
     marginTop: 50,
     alignItems: 'center',
     justifyContent: 'center',

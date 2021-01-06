@@ -18,6 +18,9 @@ export default class ModalComponent extends Component {
       display: true,
     };
   }
+  componentDidMount = () => {
+    this.props.navigation.navigate('Search');
+  };
   change() {
     this.setState({
       display: !this.state.display,

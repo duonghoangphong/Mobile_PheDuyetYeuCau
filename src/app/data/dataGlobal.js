@@ -11,6 +11,8 @@ const ROOTGlobal = {
   store: {state: {}},
   country: {name: '', id_Country: 0},
   datafacility: {HOT: [], ROO: []},
+
+  loadDSThongBao: () => {},
 };
 
 // -- Các hàm xử lý thao tác với biến gốc ROOTGlobal

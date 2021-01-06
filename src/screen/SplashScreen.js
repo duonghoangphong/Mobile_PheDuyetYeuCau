@@ -14,6 +14,7 @@ import Utils from '../app/Utils';
 import FontSize from '../componentCustom/FontSize';
 import AsyncStorage from '@react-native-community/async-storage';
 import {nGlobalKeys} from '../app/data/globalKey';
+import {connected} from '../apis/realtime';
 
 const background = require('../assets/background.jpg');
 
@@ -44,11 +45,10 @@ export default class SplashScreen extends Component {
     );
   componentDidMount = () => this.closeActivityIndicator();
   componentDidUpdate = async () => {
-    // await AsyncStorage.removeItem(nGlobalKeys.loginToken);
     let token = await AsyncStorage.getItem(nGlobalKeys.loginToken);
     Utils.nlog('==>Token: ', token);
-    if (token == null) this.props.navigation.navigate('Login');
-    else this.props.navigation.navigate('Main');
+    if (token == null) this.props.navigation.replace('Login');
+    else this.props.navigation.replace('Main'), connected(token);
   };
 
   render() {

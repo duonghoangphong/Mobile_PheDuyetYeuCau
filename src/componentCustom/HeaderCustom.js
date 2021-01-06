@@ -29,7 +29,8 @@ const Header = ({temp}) => {
     <View style={styles.bgHeader}>
       <TouchableOpacity
         style={{width: FontSize.Width(10)}}
-        onPress={() => temp.navigation.openDrawer()}>
+        // onPress={() => temp.navigation.openDrawer()}
+      >
         <Image source={iconMenu} style={styles.icon}></Image>
       </TouchableOpacity>
       <TextInput

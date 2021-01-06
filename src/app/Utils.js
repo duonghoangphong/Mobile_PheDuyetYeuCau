@@ -161,6 +161,12 @@ function goscreen(nthis, routeName, param = null) {
   }
 }
 //=========================================
+function cutAString(value) {
+  let str = value[0].split(' ');
+  let ste = str.slice(str.length - 1) + '';
+  return ste.slice(0, 1);
+}
+//=========================================
 // async function parseBase64_Custom(
 //   files = {},
 //   heightResize = 0,
@@ -222,5 +228,6 @@ export default {
   getRootGlobal,
   setGlobal,
   removeAccents,
+  cutAString,
   // parseBase64_Custom,
 };

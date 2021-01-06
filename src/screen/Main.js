@@ -6,12 +6,14 @@
  * @flow strict-local
  */
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Switch, Image} from 'react-native';
 
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {nGlobalKeys} from '../app/data/globalKey';
 import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -20,15 +22,20 @@ import {
 } from '@react-navigation/drawer';
 
 import Utils from '../app/Utils';
+import MenuCustom from '../componentCustom/MenuCustom';
+import test from '../test/ModalComponent';
 import HomeScreen from '../screen/HomeScreen';
 import LoginScreen from '../screen/LoginScreen';
 import DetailsScreen from '../screen/DetailScreen';
 import NewDetailRequestScreen from '../screen/NewDetailRequestScreen';
-import MenuCustom from '../componentCustom/MenuCustom';
 import SearchScreen from './SearchScreen';
+import NotificationScreen from './NotificationScreen';
+import InformationScreen from '../screen/InformationScreen';
+import SettingScreen from '../screen/SettingScreen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
 
 export default class Main extends React.Component {
   constructor(props) {
@@ -49,21 +56,14 @@ export default class Main extends React.Component {
       true,
     );
     this.setState({data: res.data});
-    Utils.nlog('==>Res: ', res);
+    // Utils.nlog('==>Res: ', res);
     let temp = await Utils.ngetStore(nGlobalKeys.loginToken);
     this.setState({token: temp});
   };
   render() {
     return (
       <Drawer.Navigator
-        initialRouteName="Home"
-        drawerContent={(props) => (
-          <MenuCustom
-            {...props}
-            data={this.state.data}
-            token={this.state.token}></MenuCustom>
-        )}
-        // headerMode={'none'}
+        initialRouteName="abc"
         screenOptions={{
           headerShown: false,
           cardStyle: {backgroundColor: 'transparent'},
@@ -84,23 +84,103 @@ export default class Main extends React.Component {
             },
           }),
         }}
-        mode="modal">
-        {/* <Drawer.Screen name="Children" component={Children}></Drawer.Screen> */}
-        {/* <Drawer.Screen name="Search" component={SearchScreen}></Drawer.Screen> */}
-        <Drawer.Screen name="Home" component={HomeScreen}></Drawer.Screen>
-        <Drawer.Screen name="Details" component={DetailsScreen}></Drawer.Screen>
-        {/* <Drawer.Screen
-          name="NewDetailRequest"
-          component={NewDetailRequestScreen}></Drawer.Screen> */}
+        mode="modal"
+        drawerContent={(props) => (
+          <MenuCustom
+            {...props}
+            data={this.state.data}
+            token={this.state.token}></MenuCustom>
+        )}
+        // headerMode={'none'}
+      >
+        <Drawer.Screen name="abc" component={abc}></Drawer.Screen>
+        {/* <Drawer.Screen name="Details" component={DetailsScreen}></Drawer.Screen> */}
       </Drawer.Navigator>
     );
   }
 }
-const Children = () => {
+const abc = () => {
   return (
-    <Stack.Navigator initialRouteName="Home" headerMode={'none'}>
-      <Drawer.Screen name="Home" component={HomeScreen}></Drawer.Screen>
-      <Drawer.Screen name="Details" component={DetailsScreen}></Drawer.Screen>
-    </Stack.Navigator>
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={({route}) => ({
+        tabBarLabel: route.name == 'Search' ? 'New request' : route.name,
+        tabBarIcon: ({focused, color, size}) => {
+          switch (route.name) {
+            case 'Home':
+              return (
+                <Image
+                  source={require('../assets/icon_home.png')}
+                  style={{
+                    position: 'absolute',
+                    height: focused ? 50 : 25,
+                    width: focused ? 50 : 25,
+                    tintColor: focused ? 'orange' : 'gray',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}></Image>
+              );
+              break;
+            case 'Information':
+              return (
+                <Image
+                  source={require('../assets/icon_user.png')}
+                  style={{
+                    height: focused ? 50 : 25,
+                    width: focused ? 50 : 25,
+                    tintColor: focused ? 'orange' : 'gray',
+                  }}></Image>
+              );
+              break;
+            case 'Setting':
+              return (
+                <Image
+                  source={require('../assets/icon_settings.png')}
+                  style={{
+                    height: focused ? 50 : 25,
+                    width: focused ? 50 : 25,
+                    tintColor: focused ? 'orange' : 'gray',
+                  }}></Image>
+              );
+              break;
+            case 'Search':
+              return (
+                <Image
+                  source={require('../assets/icon_add.png')}
+                  style={{
+                    height: focused ? 50 : 25,
+                    width: focused ? 50 : 25,
+                    tintColor: focused ? 'orange' : 'gray',
+                  }}></Image>
+              );
+              break;
+            case 'Notification':
+              return (
+                <Image
+                  source={require('../assets/icon_notification.png')}
+                  style={{
+                    height: focused ? 50 : 25,
+                    width: focused ? 50 : 25,
+                    tintColor: focused ? 'orange' : 'gray',
+                  }}></Image>
+              );
+              break;
+            default:
+              break;
+          }
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: null,
+        inactiveTintColor: 'gray',
+      }}>
+      <Tab.Screen
+        name="Notification"
+        component={NotificationScreen}></Tab.Screen>
+      <Tab.Screen name="Search" component={SearchScreen}></Tab.Screen>
+      <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
+      <Tab.Screen name="Information" component={InformationScreen}></Tab.Screen>
+      <Tab.Screen name="Setting" component={SettingScreen}></Tab.Screen>
+    </Tab.Navigator>
   );
 };

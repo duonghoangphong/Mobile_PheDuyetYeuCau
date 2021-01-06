@@ -8,6 +8,7 @@ import {
   StatusBar,
   Image,
   SafeAreaView,
+  TextInput,
   ImageBackground,
   Button,
   FlatList,
@@ -29,58 +30,76 @@ import {showMessage, hideMessage} from 'react-native-flash-message';
 import {ROOTGlobal} from '../app/data/dataGlobal';
 const dataFLNgang = [
   {
-    keyNgang: '1',
+    keyNgang: '0',
     DuLieu: 'Tất cả',
   },
   {
+    keyNgang: '1',
+    DuLieu: 'Đã Duyệt',
+  },
+  {
     keyNgang: '2',
-    DuLieu: 'Đến lượt duyệt',
+    DuLieu: 'Đã Từ chối',
   },
   {
     keyNgang: '3',
-    DuLieu: 'Qua hạn duyệt',
+    DuLieu: 'Đang chờ duyệt',
   },
   {
     keyNgang: '4',
-    DuLieu: 'Đang chở duyệt',
-  },
-  {
-    keyNgang: '5',
-    DuLieu: 'Đã chấp thuận',
-  },
-  {
-    keyNgang: '6',
-    DuLieu: 'Đã từ chối',
-  },
-  {
-    keyNgang: '7',
-    DuLieu: 'Đã đánh dấu',
-  },
-  {
-    keyNgang: '8',
-    DuLieu: 'Đã lưu nháp',
-  },
-  {
-    keyNgang: '9',
-    DuLieu: 'Đã lưu nháp',
+    DuLieu: 'Đang chờ',
   },
 ];
-// const [isSelected, setSelection] = React.useState(false);
-const connection = signalr.hubConnection(appConfig.domain);
+const iconMenu = require('../assets/icon_menu.png');
+const timkiem = require('../assets/icon_search.png');
+
 export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
-    // this.showAddModal = this.showAddModal.bind(this);z
     this.state = {
       modal: false,
       array: [],
+      arrayListOld: [],
+      keySearch: '',
+      id: 'TenYeuCau',
+      filter: true,
+      idmau: 0,
     };
+    // StatusBar.setBackgroundColor('#5d78ff');
   }
+  search = (searchText, id = 'TenYeuCau') => {
+    this.setState({keySearch: searchText});
+    // let filteredData = this.state.arrayList.filter(function (item) {
+    //   return item.TenLoaiYeuCau.includes(searchText);
+    // });
+    let filteredData = this.state.array.filter((item) =>
+      Utils.removeAccents(item[id])
+        .toUpperCase()
+        .includes(Utils.removeAccents(searchText.toUpperCase())),
+    );
+    if (searchText == '') filteredData = this.state.arrayListOld;
+    this.setState({array: filteredData});
+  };
+  loadDS = async (tinhtrang = 0) => {
+    // connection.stop();
+    console.log(tinhtrang);
+    this.setState({array: await getDetailHomeScreen(tinhtrang)});
+    this.setState({arrayListOld: await getDetailHomeScreen(tinhtrang)});
+    // console.log('==> array: ', this.state.array);
+  };
   renderItemNgang = ({item}) => {
     return (
       <View style={styles.title1}>
-        <TouchableOpacity>
-          <Text style={{marginHorizontal: 10, fontSize: 15, color: 'white'}}>
+        <TouchableOpacity
+          onPress={() => {
+            this.loadDS(item.keyNgang), console.log(item.keyNgang);
+          }}>
+          <Text
+            style={{
+              marginHorizontal: 10,
+              fontSize: 15,
+              color: 'white',
+            }}>
             {item.DuLieu}
           </Text>
         </TouchableOpacity>
@@ -90,83 +109,12 @@ export default class HomeScreen extends Component {
   renderTest = () => {
     return <DetailItem></DetailItem>;
   };
-  componentDidMount = async () => {
-    //This is the server under /example/server published on azure.
-    var _token = Utils.getRootGlobal(ROOTGlobal.loginToken);
-    console.log('_token: ', _token);
-
-    connection.logging = true;
-
-    const proxy = connection.createHubProxy('pheDuyetYeuCauHub');
-    //receives broadcast messages from a hub function, called "helloApp"
-    proxy.on('checkAllOnlineDSYeuCau', (temp) => {
-      console.log('message-from-server', temp);
-      //Here I could response by calling something else on the server...
-    });
-
-    connection.qs = {Token: _token};
-
-    // atempt connection, and handle errors
-    connection
-      .start()
-      .done(() => {
-        console.log('Now connected, connection ID=' + connection.id);
-        proxy
-          .invoke('helloServer', 'Hello Server, how are you?')
-          .done((directResponse) => {
-            console.log('direct-response-from-server', directResponse);
-          })
-          .fail(() => {
-            console.warn(
-              'Something went wrong when calling server, it might not be up and running?',
-            );
-          });
-      })
-      .fail(() => {
-        console.log('Failed');
-      });
-
-    //connection-handling
-    connection.connectionSlow(() => {
-      console.log(
-        'We are currently experiencing difficulties with the connection.',
-      );
-    });
-
-    connection.error((error) => {
-      const errorMessage = error.message;
-      let detailedError = '';
-      if (error.source && error.source._response) {
-        detailedError = error.source._response;
-      }
-      if (
-        detailedError ===
-        'An SSL error has occurred and a secure connection to the server cannot be made.'
-      ) {
-        console.log(
-          'When using react-native-signalr on ios with http remember to enable http in App Transport Security https://github.com/olofd/react-native-signalr/issues/14',
-        );
-      }
-      console.debug('SignalR error: ' + errorMessage, detailedError);
-    });
-    // connection.stop();
-    this.setState({array: await getDetailHomeScreen()});
-    console.log('==> array ò: ', this.state.array);
+  componentDidMount = () => {
+    this.loadDS(0);
   };
+
   showModal = () => {
-    // this.props.navigation.navigate('Search');
-    // this.setState({modal: !this.state.modal});
-    // showMessage({
-    //   message: 'aaaaaaaaaaaaaaaaaaaaaaaaaa',
-    //   type: 'danger',
-    // });
-    //   this.connection.qs = { "Token": _token };
-    // this.connection.stop()
-    var _token = Utils.getRootGlobal(ROOTGlobal.loginToken);
-    // const connection = signalr.hubConnection(appConfig.domain);
-    connection.qs = {Token: _token};
-    let a = connection.stop();
-    console.log('dskjfbdskhfdsfgkjdsfgksdjfgkjsdfdsf: ', a);
+    this.props.navigation.navigate('Search');
   };
   keyExtractorNgang = (item, index) => index.toString();
   render() {
@@ -174,17 +122,47 @@ export default class HomeScreen extends Component {
     return (
       // <View>
       <View style={{flex: 1}}>
+        <View style={styles.bgHeader}>
+          <TouchableOpacity
+            style={{width: FontSize.Width(10)}}
+            // onPress={() => temp.navigation.openDrawer()}
+          >
+            <Image source={iconMenu} style={styles.icon}></Image>
+          </TouchableOpacity>
+          <TextInput
+            ref={'IPref'}
+            style={styles.headerStyle}
+            placeholderTextColor="white"
+            placeholder="Phê duyệt yêu cầu"
+            onChangeText={(value) => this.search(value)}></TextInput>
+          <TouchableOpacity
+            // onPress={() => {
+            //   IPref.current.focus();
+            // }}
+            onPress={() => this.refs['IPref'].focus()}
+            style={styles.khung_icon}>
+            <Image source={timkiem} style={styles.icon}></Image>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => this.setState({filter: !this.state.filter})}
+            style={{width: FontSize.Width(10)}}>
+            <Image
+              source={require('../assets/icon_ellipsis.png')}
+              style={{
+                height: 30,
+                width: 30,
+                tintColor: 'white',
+                marginLeft: 10,
+              }}></Image>
+          </TouchableOpacity>
+        </View>
         <View>
-          {/* {modal == true ? <ModalCustom temp={true}></ModalCustom> : null} */}
-          {/* <ModalCustom></ModalCustom> */}
-          <HeaderCustom temp={this.props}></HeaderCustom>
           <FlatList
             horizontal={true}
             renderItem={this.renderItemNgang}
             keyExtractor={this.keyExtractorNgang}
             data={dataFLNgang}
           />
-          {/* abc */}
           <FlatList
             renderItem={({item, index}) => {
               return (
@@ -200,10 +178,6 @@ export default class HomeScreen extends Component {
             keyExtractor={this.keyExtractorNgang}
             data={this.state.array}
           />
-          {/* <FlatList renderItem={this.renderTest}></FlatList> */}
-          {/* {'123456789'.split('').map(({item, index}) => (
-            <DetailItem key={index}></DetailItem>
-          ))} */}
         </View>
 
         <TouchableOpacity
@@ -221,7 +195,6 @@ export default class HomeScreen extends Component {
             ]}></Image>
         </TouchableOpacity>
       </View>
-      // </View>
     );
   }
 }
@@ -233,46 +206,167 @@ export class DetailItem extends Component {
       color: 'gray',
     };
   }
+  abc = (tinhtrang) => {
+    switch (tinhtrang) {
+      case 0:
+        return (
+          // <Image
+          //   source={require('../assets/icon_stopwatch.png')}
+          //   style={{
+          //     width: 15,
+          //     height: 15,
+          //     position: 'absolute',
+          //     right: 0,
+          //     bottom: 0,
+          //   }}></Image>
+          null
+        );
+        break;
+      case 1:
+        return (
+          <Image
+            source={require('../assets/icon_check.png')}
+            style={{
+              width: 15,
+              height: 15,
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+            }}></Image>
+        );
+        break;
+      case 2:
+        return (
+          <Image
+            source={require('../assets/icon_uncheck.png')}
+            style={{
+              width: 15,
+              height: 15,
+              position: 'absolute',
+              right: 0,
+              bottom: 0,
+            }}></Image>
+        );
+        break;
+      default:
+        break;
+    }
+  };
+  getAvatar = (tinhtrang) => {
+    switch (tinhtrang) {
+      case 0:
+        return (
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              // source={require('../assets/icon_stopwatch.png')}
+              style={{
+                backgroundColor: 'yellow',
+                width: 20,
+                height: 20,
+              }}></Image>
+          </View>
+        );
+        break;
+      case 1:
+        return (
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={require('../assets/icon_checked.png')}
+              style={{
+                backgroundColor: '#49B046',
+                width: 20,
+                height: 20,
+              }}></Image>
+          </View>
+        );
+        break;
+      case 2:
+        return (
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Image
+              source={require('../assets/icon_crossed.png')}
+              style={{
+                backgroundColor: '#FF616B',
+                width: 20,
+                height: 20,
+              }}></Image>
+          </View>
+        );
+        break;
+      default:
+        break;
+    }
+  };
   render() {
     return (
       <TouchableOpacity
         style={{
-          // backgroundColor: this.props.index % 2 == 0 ? '#DDDDDD' : 'null',
-          // backgroundColor: '#CFCFCF50',
           borderBottomWidth: 2,
           borderColor: '#CFCFCF',
           // marginBottom: 5,
         }}
-        onPress={() =>
-          Utils.goscreen(this, 'Details', {
-            temp: this.props.item.RowID,
-          })
-        }>
+        onPress={() => {
+          console.log(this.props.item.RowID),
+            Utils.goscreen(this, 'Details', {
+              temp: this.props.item.RowID,
+            });
+        }}>
         <View style={styles.background}>
           <View style={styles.checkbox}>
-            <CheckBox
+            {/* <CheckBox
               value={this.props.index % 2 == 0 ? true : this.state.boolean}
               onValueChange={() =>
                 this.setState({boolean: !this.state.boolean})
-              }></CheckBox>
+              }></CheckBox> */}
+            {this.getAvatar(this.props.item.Id_TinhTrang)}
           </View>
           <View>
-            {console.log(this.props)}
+            {/* {console.log(this.props)} */}
             <View style={styles.datetime}>
-              <Text style={styles.title}>Đề xuất nghĩ phép</Text>
+              <Text style={styles.title} numberOfLines={1}>
+                {this.props.item.TenYeuCau}
+              </Text>
               <Text>{this.props.item.NgayTao}</Text>
             </View>
-            <Text style={{color: 'gray'}}>Bộ phận: IT - Phòng kỹ thuật</Text>
+            <Text style={{color: 'gray'}}>{this.props.item.TenNhomYeuCau}</Text>
             <View style={styles.nguoiyeucau}>
-              <Avatar.Image
+              {/* <Avatar.Image
                 source={{
                   uri:
                     'https://i.pinimg.com/236x/4b/81/77/4b81778263d5f5f51df7e26ff40f7bb8.jpg',
                 }}
                 size={30}
-              />
-              <View>
-                <Text>
+              /> */}
+              <View
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                  marginHorizontal: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#4B92E9',
+                }}>
+                <Text style={{fontSize: 15}}>
+                  {Utils.cutAString(
+                    this.props.item.NguoiTao.map((item, index) => item.HoTen),
+                  )}
+                </Text>
+              </View>
+              <View style={{width: '35%'}}>
+                <Text style={{width: 120}} numberOfLines={1}>
                   {this.props.item.NguoiTao.map((item, index) => item.HoTen)}
                 </Text>
                 <Text style={{color: 'gray'}}>
@@ -283,25 +377,74 @@ export class DetailItem extends Component {
                 source={require('../assets/icon_next.png')}
                 style={{width: 20, height: 20, tintColor: '#C0C0C0'}}></Image>
               <View style={{flexDirection: 'row'}}>
-                <View style={styles.nguoiduyet}>
-                  <Avatar.Image
-                    source={{
-                      uri:
-                        'https://i.ndh.vn/2020/07/23/capture-png4-4179-1595475143.png',
-                    }}
-                    size={30}></Avatar.Image>
-                  <Image
-                    source={require('../assets/icon_check.png')}
-                    style={{
-                      height: 15,
-                      width: 15,
-                      position: 'absolute',
-                      borderRadius: 10,
-                      right: 0,
-                      bottom: 0,
-                    }}></Image>
-                </View>
-                <View style={styles.nguoiduyet}>
+                {this.props.item.danhSachNguoiDuyet.map((item, index) => {
+                  if (
+                    this.props.item.danhSachNguoiDuyet.length > 3 &&
+                    index == 2
+                  )
+                    return (
+                      <View>
+                        <View
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            marginHorizontal: 2,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'gray',
+                          }}>
+                          <Text style={{fontSize: 10}}>
+                            {this.props.item.danhSachNguoiDuyet.length - 2}+
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  if (
+                    this.props.item.danhSachNguoiDuyet.length > 3 &&
+                    index < 3
+                  )
+                    return (
+                      <View>
+                        <View
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            marginHorizontal: 5,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#4B92E9',
+                          }}>
+                          <Text style={{fontSize: 15}}>
+                            {Utils.cutAString(item.HoTen)}
+                          </Text>
+                        </View>
+                        {this.abc(item.Status)}
+                      </View>
+                    );
+                  if (this.props.item.danhSachNguoiDuyet.length <= 3)
+                    return (
+                      <View>
+                        <View
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            marginHorizontal: 5,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: '#4B92E9',
+                          }}>
+                          <Text style={{fontSize: 15}}>
+                            {Utils.cutAString(item.HoTen)}
+                          </Text>
+                        </View>
+                        {this.abc(item.Status)}
+                      </View>
+                    );
+                })}
+                {/* <View style={styles.nguoiduyet}>
                   <Avatar.Image
                     source={{
                       uri:
@@ -318,7 +461,7 @@ export class DetailItem extends Component {
                       right: 0,
                       bottom: 0,
                     }}></Image>
-                </View>
+                </View> */}
               </View>
             </View>
           </View>
@@ -327,8 +470,8 @@ export class DetailItem extends Component {
     );
   }
 }
-// const height = Dimensions.get('screen').height;
-// const width = Dimensions.get('screen').width;
+const height = Dimensions.get('screen').height;
+const width = Dimensions.get('screen').width;
 // const height_logo = height * 0.28;
 
 const styles = StyleSheet.create({
@@ -352,6 +495,7 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     width: 40,
+    // justifyContent: 'center',
   },
   nguoiyeucau: {
     flexDirection: 'row',
@@ -362,6 +506,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
+    width: '50%',
   },
   nguoiduyet: {
     // marginLeft: 30,
@@ -372,5 +517,79 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     // backgroundColor: 'yellow',
     width: FontSize.Width(85),
+  },
+  bgHeader: {
+    backgroundColor: '#5d78ff',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    elevation: 10,
+    shadowOffset: {width: 0, height: 10},
+    shadowOpacity: 0.2,
+    position: 'relative',
+    flexDirection: 'row',
+    width: width,
+    height: FontSize.Height(7),
+    paddingHorizontal: 15,
+    // borderBottomWidth: 1,
+  },
+  headerStyle: {
+    fontSize: 25,
+    color: 'white',
+    width: FontSize.Width(60),
+    marginLeft: 10,
+    // backgroundColor: 'red',
+  },
+  khung_icon: {
+    width: FontSize.Width(10),
+    height: FontSize.sizes.nImgSize35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    // backgroundColor: '#4285F480',
+  },
+  icon: {
+    width: FontSize.sizes.nImgSize25,
+    height: FontSize.sizes.nImgSize25,
+    tintColor: 'white',
+  },
+  Alert_Main_View: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#009688',
+    height: 200,
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 7,
+  },
+
+  Alert_Title: {
+    fontSize: 25,
+    color: '#fff',
+    textAlign: 'center',
+    padding: 10,
+    height: '28%',
+  },
+
+  Alert_Message: {
+    fontSize: 22,
+    color: '#fff',
+    textAlign: 'center',
+    padding: 10,
+    height: '42%',
+  },
+
+  buttonStyle: {
+    width: '50%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  TextStyle: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 22,
+    marginTop: -5,
   },
 });

@@ -1,65 +1,38 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, Image, Modal} from 'react-native';
-import {FlatList, TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Modal,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import FontSize from '../componentCustom/FontSize';
 import {SearchBar} from 'react-native-elements';
 import getDanhSachSearch from '../apis/getDanhSachSearch';
 import Utils from '../app/Utils';
-
-const data = [
-  {
-    id: '1',
-    name: 'Tất cả',
-  },
-  {
-    id: '2',
-    name: 'Đến lượt duyệt',
-  },
-  {
-    id: '3',
-    name: 'Qua hạn duyệt',
-  },
-  {
-    id: '4',
-    name: 'Đang chở duyệt',
-  },
-  {
-    id: '5',
-    name: 'Đã chấp thuận',
-  },
-  {
-    id: '6',
-    name: 'Đã từ chối',
-  },
-  {
-    id: '7',
-    name: 'Đã đánh dấu',
-  },
-  {
-    id: '8',
-    name: 'Đã lưu nháp',
-  },
-  {
-    id: '9',
-    name: 'Đã lưu nháp',
-  },
-];
+import LinerGradient from 'react-native-linear-gradient';
 export default class SearchScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mang: data,
       keySearch: '',
       arrayList: [],
       arrayListOld: [],
       modal: true,
+      refresing: false,
     };
   }
   keyExtractorNgang = (item, index) => index.toString();
-  componentDidMount = async () => {
+  loadDSSearch = async () => {
     let temp = await getDanhSachSearch(1, '', '');
-    this.setState({arrayList: temp, arrayListOld: temp});
+    this.setState({arrayList: temp, arrayListOld: temp, refreshing: false});
   };
+  componentDidMount() {
+    this.loadDSSearch();
+  }
 
   search = (searchText) => {
     this.setState({keySearch: searchText});
@@ -78,30 +51,23 @@ export default class SearchScreen extends Component {
     return (
       <View
         style={{
-          marginHorizontal: 20,
-          marginVertical: 40,
+          // marginHorizontal: 20,
+          // marginVertical: 40,
           backgroundColor: 'white',
-          height: '90%',
+          // height: '90%',
         }}>
-        <View
-          style={[
-            {justifyContent: 'space-between', paddingHorizontal: 10},
-            styles.title,
-          ]}>
-          <Text
-            style={{
-              fontSize: 17,
-              fontWeight: 'bold',
-              color: 'white',
-            }}>
-            TÌM KIẾM LOẠI YÊU CẦU
-          </Text>
+        <LinerGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#5d78ff', '#00E6FF']}
+          style={styles.header}>
           <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
             <Image
-              source={require('../assets/icon_close.png')}
-              style={{height: 20, width: 20, tintColor: 'white'}}></Image>
+              source={require('../assets/icon_goback.png')}
+              style={styles.hinh}></Image>
           </TouchableOpacity>
-        </View>
+          <Text style={styles.title_header}> Tìm kiếm loại yêu cầu</Text>
+        </LinerGradient>
         <SearchBar
           placeholder="Search..."
           showCancel={true}
@@ -116,9 +82,7 @@ export default class SearchScreen extends Component {
             marginHorizontal: 5,
           }}
           onChangeText={this.search}
-          value={this.state.keySearch}
-          // inputContainerStyle={}
-        ></SearchBar>
+          value={this.state.keySearch}></SearchBar>
         <FlatList
           renderItem={({item, index}) => {
             return (
@@ -129,6 +93,8 @@ export default class SearchScreen extends Component {
               />
             );
           }}
+          refreshing={this.state.refresing}
+          onRefresh={this.loadDSSearch}
           keyExtractor={this.keyExtractorNgang}
           data={this.state.arrayList}
         />
@@ -146,27 +112,36 @@ export class DetailItem extends Component {
           })
         }
         style={styles.touchable}>
-        <View
-          style={[
-            styles.viewdetailitem,
-            {
-              // backgroundColor: '#CFCFCF50',
-              // this.props.index % 2 == 0 ? '#69696905' : 'white',
-            },
-          ]}>
+        <View style={styles.viewdetailitem}>
           <Text style={styles.detail_item_tieude}>
             {this.props.item.TenLoaiYeuCau}
           </Text>
-
-          <Text style={styles.detail_item_mota}>
-            Mô tả: {this.props.item.MoTa}
-          </Text>
+          {this.props.item.MoTa == '' ? null : (
+            <Text style={styles.detail_item_mota}>
+              Mô tả: {this.props.item.MoTa}
+            </Text>
+          )}
         </View>
       </TouchableOpacity>
     );
   }
 }
+const height = Dimensions.get('screen').height;
+const width = Dimensions.get('screen').width;
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    height: height / 17,
+    backgroundColor: '#5d78ff',
+    // justifyContent: 'center',
+    alignItems: 'center',
+  },
+  hinh: {width: 30, height: 30, tintColor: 'white', marginHorizontal: 15},
+  title_header: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 25,
+  },
   background: {backgroundColor: 'red'},
   title: {
     flexDirection: 'row',
@@ -174,11 +149,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     backgroundColor: '#5d78ff',
     height: 50,
-  },
-  viewdetailitem: {
-    // marginHorizontal: 5,
-    // marginVertical: 5,
-    // borderWidth: 0.5,
   },
   detail_item_tieude: {
     fontSize: 20,
@@ -194,6 +164,5 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     borderBottomWidth: 2,
     borderBottomColor: '#CFCFCF',
-    // backgroundColor: '#CFCFCF50',
   },
 });
