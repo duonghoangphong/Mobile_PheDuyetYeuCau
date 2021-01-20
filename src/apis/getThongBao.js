@@ -1,9 +1,11 @@
 import {appConfig} from '../app/Config';
+import Utils from '../app/Utils';
 import signalr from 'react-native-signalr';
 import {showMessage, hideMessage} from 'react-native-flash-message';
+import {ROOTGlobal} from '../app/data/dataGlobal';
 const connection = signalr.hubConnection(appConfig.domain);
 
-async function thongBaoConnected(token, link = 'pheDuyetYeuCauHub') {
+async function thongBaoConnected(props, token, link = 'pheDuyetYeuCauHub') {
   //This is the server under /example/server published on azure.
   //   var _token = Utils.getRootGlobal(ROOTGlobal.loginToken);
   var _token = token;
@@ -13,10 +15,26 @@ async function thongBaoConnected(token, link = 'pheDuyetYeuCauHub') {
   const proxy = connection.createHubProxy(link);
   //receives broadcast messages from a hub function, called "helloApp"
   proxy.on('GuiThongBaoChoNguoiDuyet', (temp) => {
-    console.log('thongbao: ', temp);
+    // console.log('thongbao: ', temp);
+    console.log(props);
+    ROOTGlobal.loadDSHome();
+    ROOTGlobal.loadDSThongBao();
+    ROOTGlobal.loadThongBao('bo gia tri vao VALUE cua Ham - MAIN');
     showMessage({
-      message: 'Có thông báo mới !',
-      type: 'info',
+      description:
+        temp.data[0].TenNguoiGuiYeuCau +
+        temp.data[0].NoiDung +
+        temp.data[0].TenYeuCau,
+      message: 'Thông báo mới',
+      type: 'warning',
+      autoHide: true,
+      duration: 5000,
+      // onPress: () =>
+      //   Utils.goscreen(props, 'Details', {
+      //     temp: temp.data[0].ID_YeuCau,
+      //   }),
+      // onPress: () => alert(1),
+      // hideOnPress: () => alert(1),
     });
     //Here I could response by calling something else on the server...
   });

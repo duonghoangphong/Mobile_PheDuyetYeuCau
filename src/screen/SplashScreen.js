@@ -15,6 +15,7 @@ import FontSize from '../componentCustom/FontSize';
 import AsyncStorage from '@react-native-community/async-storage';
 import {nGlobalKeys} from '../app/data/globalKey';
 import {connected} from '../apis/realtime';
+import {thongBaoConnected} from '../apis/getThongBao';
 
 const background = require('../assets/background.jpg');
 
@@ -48,7 +49,11 @@ export default class SplashScreen extends Component {
     let token = await AsyncStorage.getItem(nGlobalKeys.loginToken);
     Utils.nlog('==>Token: ', token);
     if (token == null) this.props.navigation.replace('Login');
-    else this.props.navigation.replace('Main'), connected(token);
+    else {
+      this.props.navigation.replace('Main');
+      // connected(token);
+      thongBaoConnected(this.props, token);
+    }
   };
 
   render() {

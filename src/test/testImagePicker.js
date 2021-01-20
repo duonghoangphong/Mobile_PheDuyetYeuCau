@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Button, Image, Text} from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 export default class App extends Component {
   constructor(props) {
@@ -10,14 +10,14 @@ export default class App extends Component {
     };
   }
 
-  launchImageLibrary = () => {
+  _launchImageLibrary = () => {
     let options = {
       storageOptions: {
         skipBackup: false,
         path: 'images',
       },
     };
-    ImagePicker.showImagePicker(options, (response) => {
+    launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('user cancelled image picker');
       } else if (response.error) {
@@ -53,7 +53,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <Button
           title="select image"
-          onPress={() => this.launchImageLibrary()}
+          onPress={() => this._launchImageLibrary()}
         />
         {this.renderFileUri()}
       </View>

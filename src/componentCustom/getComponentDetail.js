@@ -28,7 +28,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import SelectMultiple from 'react-native-select-multiple';
 import CheckBox from '@react-native-community/checkbox';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import ImagePickerCrop from 'react-native-image-crop-picker';
 import DocumentPicker from 'react-native-document-picker';
 import RadioForm, {
@@ -144,7 +144,7 @@ export default class DetailItem extends Component {
         path: 'images',
       },
     };
-    await ImagePicker.showImagePicker(options, (response) => {
+    await launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('user cancelled image picker');
       } else if (response.error) {
@@ -228,7 +228,6 @@ export default class DetailItem extends Component {
     arrayTemp['Value'] = value;
     this.state.arrayDecant[index] = arrayTemp;
     this.props.onEvent(this.state.arrayDecant); //error
-    console.log('==> test: ', this.state.arrayDecant);
   };
   setArrayDecantOfStateFirst = async (mang) => {
     this.state.arrayDecant.map((item, index) => {
@@ -253,7 +252,7 @@ export default class DetailItem extends Component {
       this.state.arrayDecant[index] = arrayTemp;
     });
     this.props.onEvent(this.state.arrayDecant); //error
-    console.log('==> test: ', this.state.arrayDecant);
+    // console.log('==> test: ', this.state.arrayDecant);
   };
   takePics = () => {
     ImagePickerCrop.openPicker({
@@ -387,6 +386,7 @@ export default class DetailItem extends Component {
         return (
           <DatePicker
             date={this.state.date}
+            format="MM-DD-YYYY"
             style={{
               borderColor: 'gray',
               height: 40,
@@ -542,7 +542,7 @@ export default class DetailItem extends Component {
                 );
               }}
               style={{
-                backgroundColor: '#7B7070',
+                backgroundColor: '#5d78ff',
                 borderRadius: 5,
                 height: 30,
                 width: 80,
@@ -600,7 +600,7 @@ export default class DetailItem extends Component {
                 );
               }}
               style={{
-                backgroundColor: '#7B7070',
+                backgroundColor: '#5d78ff',
                 borderRadius: 5,
                 height: 30,
                 width: 120,
@@ -634,7 +634,7 @@ export default class DetailItem extends Component {
                 )
               }
               style={{
-                backgroundColor: 'gray',
+                backgroundColor: '#5d78ff',
                 borderRadius: 5,
                 height: 30,
                 width: 80,
@@ -693,7 +693,7 @@ export default class DetailItem extends Component {
                 )
               }
               style={{
-                backgroundColor: 'gray',
+                backgroundColor: '#5d78ff',
                 borderRadius: 5,
                 height: 30,
                 width: 120,

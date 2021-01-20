@@ -1,4 +1,5 @@
-import React, {useRef} from 'react';
+import React from // , {useRef}
+'react';
 import {
   View,
   Text,
@@ -22,7 +23,7 @@ const timkiem = require('../assets/icon_search.png');
 const height = Dimensions.get('screen').height;
 const width = Dimensions.get('screen').width;
 const Header = ({temp}) => {
-  const IPref = useRef(null);
+  // const IPref = useRef(null);
   // console.log('temp cua ma hinh :', temp);
   const [state, setState] = React.useState(true);
   return (
@@ -34,13 +35,13 @@ const Header = ({temp}) => {
         <Image source={iconMenu} style={styles.icon}></Image>
       </TouchableOpacity>
       <TextInput
-        ref={IPref}
+        // ref={IPref}
         style={styles.headerStyle}
         placeholderTextColor="white"
         placeholder="Approval request"></TextInput>
       <TouchableOpacity
         onPress={() => {
-          IPref.current.focus();
+          // IPref.current.focus();
         }}
         style={styles.khung_icon}>
         <Image source={timkiem} style={styles.icon}></Image>

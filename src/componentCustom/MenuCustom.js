@@ -131,7 +131,7 @@ export default function MenuCustom(props) {
                               fontSize: 20,
                             }}>
                             <Image
-                              source={require('../assets/icon_arrowhead-pointing-to-the-right.png')}
+                              source={require('../assets/icon_next1.png')}
                               style={{
                                 height: 15,
                                 width: 20,

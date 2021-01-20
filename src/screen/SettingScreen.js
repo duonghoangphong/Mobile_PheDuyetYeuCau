@@ -1,15 +1,24 @@
 import React, {Component} from 'react';
+import Utils from '../app/Utils';
 import {View, Text, Image, StyleSheet, Dimensions} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import {nGlobalKeys} from '../app/data/globalKey';
 import LinerGradient from 'react-native-linear-gradient';
 import {disconnected} from '../apis/realtime';
+import postOneSignalID from '../apis/postOneSignalID';
 export default class SettingScreen extends Component {
   signOut = async () => {
+    let abs = {};
+    let temp = await Utils.ngetStore(nGlobalKeys.onesignalToken);
+    abs['devicestoken'] = temp;
+    abs['IsLogout'] = true;
+    console.log('==>> abcs', abs);
+    let a = await postOneSignalID(abs);
+    console.log(a);
     await AsyncStorage.removeItem(nGlobalKeys.loginToken);
     this.props.navigation.replace('Login');
-    disconnected('123');
+    // disconnected('123');
   };
   render() {
     return (

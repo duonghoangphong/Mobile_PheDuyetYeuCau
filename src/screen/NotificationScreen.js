@@ -15,6 +15,7 @@ import LinerGradient from 'react-native-linear-gradient';
 import getDSThongBao from '../apis/getDSThongBao';
 import getDaDocTB from '../apis/getDaDocTB';
 import Utils from '../app/Utils';
+import getThongTinChiTietStatus from '../apis/getThongTinChiTietStatus';
 export default class NotificationScreen extends Component {
   constructor(props) {
     super(props);
@@ -23,11 +24,16 @@ export default class NotificationScreen extends Component {
       refreshing: false,
     };
     ROOTGlobal.loadDSThongBao = this.loadDS;
+    ROOTGlobal.checkDaXemThongBao = (value) => this.click(value);
   }
   click = async (id) => {
+    console.log(id);
     let a = await getDaDocTB(id);
+    ROOTGlobal.loadThongBao('asdasda');
+    console.log(a);
   };
   loadDS = async () => {
+    console.log(123);
     let temp = await getDSThongBao();
     this.setState({data: temp, refreshing: false});
   };
@@ -37,49 +43,55 @@ export default class NotificationScreen extends Component {
   // componentDidUpdate() {
   //   this.loadDS();
   // }
+  chuyentrang = async (item) => {
+    let temp = await getThongTinChiTietStatus(item.ID_YeuCau);
+    if (temp == -1) alert('Yêu cầu đã bị xóa!');
+    else {
+      this.click(item.ThongBaoID),
+        Utils.goscreen(this, 'Details', {
+          temp: item.ID_YeuCau,
+        });
+    }
+  };
   renderItemNgang = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => {
-          this.click(item.ThongBaoID),
-            Utils.goscreen(this, 'Details', {
-              temp: item.ID_YeuCau,
-            });
-        }}
+        onPress={() => this.chuyentrang(item)}
         style={{
-          backgroundColor: item.DaDoc ? 'white' : '#D2DAFF',
+          backgroundColor: item.DaDoc ? 'white' : '#C7EAFF',
           marginBottom: 1,
         }}>
         <View
           style={{
             flexDirection: 'row',
-            marginVertical: 5,
+            marginVertical: 15,
           }}>
-          {item.NguoiTao.map((item, index) => item.Image) == '' ? (
-            <View
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 30,
-                marginHorizontal: 5,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#4B92E9',
-              }}>
-              <Text style={{fontSize: 30}}>
-                {Utils.cutAString(
-                  item.NguoiTao.map((item, index) => item.HoTen),
-                )}
-                {/* aaa */}
-              </Text>
-            </View>
-          ) : (
-            <Image
-              source={{
-                uri: item.NguoiTao.map((item, index) => item.Image),
-                // 'https://hicksartgallery.com/wp-content/uploads/2019/09/avatar-gai-xinh.jpg',
-              }}
-              style={styles.hinh_avatar}></Image>
+          {item.NguoiTao.map((item, index) =>
+            item.Image == '' ? (
+              <View
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 30,
+                  marginHorizontal: 5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#4B92E9',
+                }}>
+                <Text style={{fontSize: 30}}>
+                  {Utils.cutAString(item.HoTen)}
+                  {/* aaa */}
+                </Text>
+              </View>
+            ) : (
+              <Image
+                source={{
+                  uri: item.Image,
+                  // item.NguoiTao.map((item, index) => item.Image),
+                  // 'https://hicksartgallery.com/wp-content/uploads/2019/09/avatar-gai-xinh.jpg',
+                }}
+                style={styles.hinh_avatar}></Image>
+            ),
           )}
 
           <View style={{height: 50, width: '83%'}}>
@@ -130,7 +142,7 @@ export default class NotificationScreen extends Component {
         </TouchableOpacity> */}
         <FlatList
           // horizontal={true}
-
+          extraData={this.state}
           refreshing={this.state.refreshing}
           onRefresh={this.loadDS}
           renderItem={this.renderItemNgang}

@@ -47,7 +47,11 @@ const dataFLNgang = [
   },
   {
     keyNgang: '4',
-    DuLieu: 'Đang chờ',
+    DuLieu: 'Đến lượt duyệt',
+  },
+  {
+    keyNgang: '5',
+    DuLieu: 'Qúa hạn duyệt',
   },
 ];
 const iconMenu = require('../assets/icon_menu.png');
@@ -62,10 +66,14 @@ export default class HomeScreen extends Component {
       arrayListOld: [],
       keySearch: '',
       id: 'TenYeuCau',
+      idmau1: true,
+      idmau2: true,
       filter: true,
+      listTinhTrang: dataFLNgang,
       idmau: 0,
     };
-    // StatusBar.setBackgroundColor('#5d78ff');
+    StatusBar.setBackgroundColor('#5d78ff');
+    ROOTGlobal.loadDSHome = this.loadDS;
   }
   search = (searchText, id = 'TenYeuCau') => {
     this.setState({keySearch: searchText});
@@ -80,34 +88,56 @@ export default class HomeScreen extends Component {
     if (searchText == '') filteredData = this.state.arrayListOld;
     this.setState({array: filteredData});
   };
-  loadDS = async (tinhtrang = 0) => {
-    // connection.stop();
-    console.log(tinhtrang);
-    this.setState({array: await getDetailHomeScreen(tinhtrang)});
-    this.setState({arrayListOld: await getDetailHomeScreen(tinhtrang)});
-    // console.log('==> array: ', this.state.array);
+  loadDS = async (
+    tinhtrang = 0,
+    toiguidi = '',
+    guidentoi = '',
+    idmau1 = this.state.idmau1,
+    idmau2 = this.state.idmau2,
+  ) => {
+    // console.log(
+    //   '==> HomeScreen: ',
+    //   tinhtrang,
+    //   toiguidi,
+    //   guidentoi,
+    //   idmau1,
+    //   idmau2,
+    // );
+    let temp = await getDetailHomeScreen(tinhtrang, toiguidi, guidentoi);
+    this.setState({
+      array: temp,
+      arrayListOld: temp,
+      idmau1: idmau1,
+      idmau2: idmau2,
+    });
   };
-  renderItemNgang = ({item}) => {
+  keyExtractorNgang = (item, index) => index.toString();
+  renderItemNgang = ({item, index}) => {
     return (
       <View style={styles.title1}>
+        {/* {console.log(this.state.idmau1, this.state.idmau2)} */}
         <TouchableOpacity
           onPress={() => {
-            this.loadDS(item.keyNgang), console.log(item.keyNgang);
+            this.loadDS(
+              item.keyNgang,
+              this.state.idmau2 ? 1 : 0,
+              this.state.idmau1 ? 1 : 0,
+            ),
+              this.setState({idmau: item.keyNgang});
           }}>
           <Text
             style={{
               marginHorizontal: 10,
-              fontSize: 15,
+              fontSize: 18,
               color: 'white',
+              color: this.state.idmau == item.keyNgang ? 'white' : '#D8D8D8',
+              fontWeight: this.state.idmau == item.keyNgang ? 'bold' : 'normal',
             }}>
             {item.DuLieu}
           </Text>
         </TouchableOpacity>
       </View>
     );
-  };
-  renderTest = () => {
-    return <DetailItem></DetailItem>;
   };
   componentDidMount = () => {
     this.loadDS(0);
@@ -116,18 +146,53 @@ export default class HomeScreen extends Component {
   showModal = () => {
     this.props.navigation.navigate('Search');
   };
-  keyExtractorNgang = (item, index) => index.toString();
+  test = (value1, value2) => {
+    alert(value1 + '' + value2);
+  };
+  EmptyListMessage = ({item}) => {
+    return (
+      // Flat List Item
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: 500,
+          // backgroundColor: 'red',
+        }}>
+        <Image
+          source={require('../assets/icon_file.png')}
+          style={{tintColor: 'gray'}}></Image>
+        <Text style={{fontSize: 20}}>
+          Không có yêu cầu nào được hiển thị ...
+        </Text>
+      </View>
+    );
+  };
+
   render() {
     const modal = this.state.modal;
+    let {listTinhTrang} = this.state;
     return (
       // <View>
       <View style={{flex: 1}}>
         <View style={styles.bgHeader}>
           <TouchableOpacity
-            style={{width: FontSize.Width(10)}}
+            style={{
+              width: 40,
+              height: 35,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
             // onPress={() => temp.navigation.openDrawer()}
-          >
-            <Image source={iconMenu} style={styles.icon}></Image>
+            // onPress={() => this.props.navigation.navigate('Modal_ThongKe')}
+            onPress={() =>
+              Utils.goscreen(this, 'Modal_ThongKe', {
+                onEvent: this.loadDS,
+              })
+            }>
+            <Image
+              source={require('../assets/iconapp.png')}
+              style={{width: 35, height: 35}}></Image>
           </TouchableOpacity>
           <TextInput
             ref={'IPref'}
@@ -144,26 +209,30 @@ export default class HomeScreen extends Component {
             <Image source={timkiem} style={styles.icon}></Image>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => this.setState({filter: !this.state.filter})}
-            style={{width: FontSize.Width(10)}}>
+            style={{width: FontSize.Width(10)}}
+            onPress={() =>
+              Utils.goscreen(this, 'Modal_Fitter', {
+                onEvent: this.loadDS,
+                idmau: this.state.idmau,
+                idmau1: this.state.idmau1,
+                idmau2: this.state.idmau2,
+              })
+            }>
             <Image
-              source={require('../assets/icon_ellipsis.png')}
-              style={{
-                height: 30,
-                width: 30,
-                tintColor: 'white',
-                marginLeft: 10,
-              }}></Image>
+              source={require('../assets/icon_filter.png')}
+              style={[styles.icon, {marginLeft: 10}]}></Image>
           </TouchableOpacity>
         </View>
         <View>
           <FlatList
+            extraData={this.state}
             horizontal={true}
             renderItem={this.renderItemNgang}
             keyExtractor={this.keyExtractorNgang}
-            data={dataFLNgang}
+            data={listTinhTrang}
           />
           <FlatList
+            style={{marginBottom: '20%'}}
             renderItem={({item, index}) => {
               return (
                 <DetailItem
@@ -173,10 +242,12 @@ export default class HomeScreen extends Component {
                 />
               );
             }}
+            extraData={this.state}
             refreshing={this.state.modal}
-            onRefresh={() => this.setState({modal: false})}
+            onRefresh={() => this.loadDS()}
             keyExtractor={this.keyExtractorNgang}
             data={this.state.array}
+            ListEmptyComponent={this.EmptyListMessage}
           />
         </View>
 
@@ -207,50 +278,75 @@ export class DetailItem extends Component {
     };
   }
   abc = (tinhtrang) => {
-    switch (tinhtrang) {
-      case 0:
-        return (
-          // <Image
-          //   source={require('../assets/icon_stopwatch.png')}
-          //   style={{
-          //     width: 15,
-          //     height: 15,
-          //     position: 'absolute',
-          //     right: 0,
-          //     bottom: 0,
-          //   }}></Image>
-          null
-        );
-        break;
-      case 1:
-        return (
-          <Image
-            source={require('../assets/icon_check.png')}
-            style={{
-              width: 15,
-              height: 15,
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
-            }}></Image>
-        );
-        break;
-      case 2:
-        return (
-          <Image
-            source={require('../assets/icon_uncheck.png')}
-            style={{
-              width: 15,
-              height: 15,
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
-            }}></Image>
-        );
-        break;
-      default:
-        break;
-    }
+    let temp =
+      tinhtrang == 0
+        ? null
+        : // require('../assets/icon_waiting.png')
+        tinhtrang == 1
+        ? require('../assets/icon_check.png')
+        : require('../assets/icon_uncheck.png');
+    return (
+      <View>
+        <Image
+          source={temp}
+          style={{
+            width: 15,
+            height: 15,
+            position: 'absolute',
+            // tintColor: tinhtrang == 0 ? 'yellow' :,
+            right: 0,
+            bottom: 0,
+          }}></Image>
+      </View>
+    );
+    // switch (tinhtrang) {
+    //   case 0:
+    //     return (
+    //       <View>
+    //         <Image
+    //           source={require('../assets/icon_stopwatch.png')}
+    //           style={{
+    //             width: 15,
+    //             height: 15,
+    //             position: 'absolute',
+    //             right: 0,
+    //             bottom: 0,
+    //             tintColor: 'yellow',
+    //           }}></Image>
+    //       </View>
+    //     );
+    //     break;
+    //   case 1:
+    //     return (
+    //       <View>
+    //         <Image
+    //           source={require('../assets/icon_check.png')}
+    //           style={{
+    //             width: 15,
+    //             height: 15,
+    //             position: 'absolute',
+    //             right: 0,
+    //             bottom: 0,
+    //           }}></Image>
+    //       </View>
+    //     );
+    //     break;
+    //   case 2:
+    //     return (
+    //       <Image
+    //         source={require('../assets/icon_uncheck.png')}
+    //         style={{
+    //           width: 15,
+    //           height: 15,
+    //           position: 'absolute',
+    //           right: 0,
+    //           bottom: 0,
+    //         }}></Image>
+    //     );
+    //     break;
+    //   default:
+    //     break;
+    // }
   };
   getAvatar = (tinhtrang) => {
     switch (tinhtrang) {
@@ -261,13 +357,22 @@ export class DetailItem extends Component {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Image
-              // source={require('../assets/icon_stopwatch.png')}
+            {/* <Image
+              // source={require('../assets/icon_waiting.png')}
               style={{
-                backgroundColor: 'yellow',
+                // backgroundColor: 'yellow',
+                tintColor: 'white',
                 width: 20,
                 height: 20,
-              }}></Image>
+              }}></Image> */}
+            <Text
+              style={{
+                width: 20,
+                height: 20,
+                borderWidth: 1,
+                borderRadius: 5,
+                borderColor: 'gray',
+              }}></Text>
           </View>
         );
         break;
@@ -281,9 +386,11 @@ export class DetailItem extends Component {
             <Image
               source={require('../assets/icon_checked.png')}
               style={{
-                backgroundColor: '#49B046',
+                backgroundColor: '#88E579',
+                borderRadius: 3,
                 width: 20,
                 height: 20,
+                tintColor: 'white',
               }}></Image>
           </View>
         );
@@ -298,9 +405,11 @@ export class DetailItem extends Component {
             <Image
               source={require('../assets/icon_crossed.png')}
               style={{
-                backgroundColor: '#FF616B',
+                backgroundColor: '#F46967',
+                borderRadius: 3,
                 width: 20,
                 height: 20,
+                tintColor: 'white',
               }}></Image>
           </View>
         );
@@ -312,17 +421,18 @@ export class DetailItem extends Component {
   render() {
     return (
       <TouchableOpacity
+        // key={this.props.key}
         style={{
           borderBottomWidth: 2,
           borderColor: '#CFCFCF',
           // marginBottom: 5,
+          backgroundColor: 'white',
         }}
-        onPress={() => {
-          console.log(this.props.item.RowID),
-            Utils.goscreen(this, 'Details', {
-              temp: this.props.item.RowID,
-            });
-        }}>
+        onPress={() =>
+          Utils.goscreen(this, 'Details', {
+            temp: this.props.item.RowID,
+          })
+        }>
         <View style={styles.background}>
           <View style={styles.checkbox}>
             {/* <CheckBox
@@ -338,7 +448,9 @@ export class DetailItem extends Component {
               <Text style={styles.title} numberOfLines={1}>
                 {this.props.item.TenYeuCau}
               </Text>
-              <Text>{this.props.item.NgayTao}</Text>
+              <Text style={{color: 'blue', fontSize: 13}}>
+                {this.props.item.NgayTao}
+              </Text>
             </View>
             <Text style={{color: 'gray'}}>{this.props.item.TenNhomYeuCau}</Text>
             <View style={styles.nguoiyeucau}>
@@ -349,24 +461,42 @@ export class DetailItem extends Component {
                 }}
                 size={30}
               /> */}
-              <View
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                  marginHorizontal: 5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#4B92E9',
-                }}>
-                <Text style={{fontSize: 15}}>
-                  {Utils.cutAString(
-                    this.props.item.NguoiTao.map((item, index) => item.HoTen),
-                  )}
-                </Text>
-              </View>
-              <View style={{width: '35%'}}>
-                <Text style={{width: 120}} numberOfLines={1}>
+              {this.props.item.NguoiTao[0].Image == '' ? (
+                <View
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    marginHorizontal: 5,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#4B92E9',
+                  }}>
+                  <Text style={{fontSize: 15}}>
+                    {Utils.cutAString(
+                      this.props.item.NguoiTao.map((item, index) => item.HoTen),
+                    )}
+                  </Text>
+                </View>
+              ) : (
+                <Image
+                  source={{
+                    uri: this.props.item.NguoiTao[0].Image,
+                  }}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                    marginHorizontal: 5,
+                  }}></Image>
+              )}
+              {/* <Image
+                source={{
+                  uri: this.props.item.NguoiTao[0].Image,
+                }}
+                style={{width: 50, height: 50}}></Image> */}
+              <View style={{width: 125}}>
+                <Text numberOfLines={1}>
                   {this.props.item.NguoiTao.map((item, index) => item.HoTen)}
                 </Text>
                 <Text style={{color: 'gray'}}>
@@ -375,7 +505,12 @@ export class DetailItem extends Component {
               </View>
               <Image
                 source={require('../assets/icon_next.png')}
-                style={{width: 20, height: 20, tintColor: '#C0C0C0'}}></Image>
+                style={{
+                  width: 15,
+                  height: 15,
+                  tintColor: '#C0C0C0',
+                  marginHorizontal: 10,
+                }}></Image>
               <View style={{flexDirection: 'row'}}>
                 {this.props.item.danhSachNguoiDuyet.map((item, index) => {
                   if (
@@ -383,64 +518,98 @@ export class DetailItem extends Component {
                     index == 2
                   )
                     return (
-                      <View>
-                        <View
-                          style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 15,
-                            marginHorizontal: 2,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: 'gray',
-                          }}>
-                          <Text style={{fontSize: 10}}>
-                            {this.props.item.danhSachNguoiDuyet.length - 2}+
-                          </Text>
-                        </View>
+                      <View
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 15,
+                          marginHorizontal: 2,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: '#B6B6B6',
+                        }}>
+                        <Text style={{fontSize: 12}}>
+                          {this.props.item.danhSachNguoiDuyet.length - 2}+
+                        </Text>
                       </View>
                     );
                   if (
                     this.props.item.danhSachNguoiDuyet.length > 3 &&
-                    index < 3
+                    index < 2
                   )
                     return (
                       <View>
-                        <View
-                          style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 15,
-                            marginHorizontal: 5,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: '#4B92E9',
-                          }}>
-                          <Text style={{fontSize: 15}}>
-                            {Utils.cutAString(item.HoTen)}
-                          </Text>
-                        </View>
-                        {this.abc(item.Status)}
+                        {item.Image == '' ? (
+                          <View>
+                            <View
+                              style={{
+                                width: 30,
+                                height: 30,
+                                borderRadius: 15,
+                                marginHorizontal: 5,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: '#4B92E9',
+                              }}>
+                              <Text style={{fontSize: 15}}>
+                                {Utils.cutAString(item.HoTen)}
+                              </Text>
+                            </View>
+                            {this.abc(item.Status)}
+                          </View>
+                        ) : (
+                          <View>
+                            <Image
+                              source={{
+                                uri: item.Image,
+                              }}
+                              style={{
+                                width: 30,
+                                height: 30,
+                                borderRadius: 15,
+                                marginHorizontal: 5,
+                              }}></Image>
+                            {this.abc(item.Status)}
+                          </View>
+                        )}
                       </View>
                     );
                   if (this.props.item.danhSachNguoiDuyet.length <= 3)
                     return (
                       <View>
-                        <View
-                          style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 15,
-                            marginHorizontal: 5,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            backgroundColor: '#4B92E9',
-                          }}>
-                          <Text style={{fontSize: 15}}>
-                            {Utils.cutAString(item.HoTen)}
-                          </Text>
-                        </View>
-                        {this.abc(item.Status)}
+                        {item.Image == '' ? (
+                          <View>
+                            <View
+                              style={{
+                                width: 30,
+                                height: 30,
+                                borderRadius: 15,
+                                marginHorizontal: 5,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                backgroundColor: '#4B92E9',
+                              }}>
+                              <Text style={{fontSize: 15}}>
+                                {Utils.cutAString(item.HoTen)}
+                              </Text>
+                            </View>
+                            {this.abc(item.Status)}
+                          </View>
+                        ) : (
+                          <View>
+                            <Image
+                              source={{
+                                uri: item.Image,
+                              }}
+                              style={{
+                                width: 30,
+                                height: 30,
+                                borderRadius: 15,
+                                marginHorizontal: 5,
+                              }}></Image>
+                            {this.abc(item.Status)}
+                          </View>
+                        )}
                       </View>
                     );
                 })}
@@ -480,9 +649,10 @@ const styles = StyleSheet.create({
   //   height: height,
   // },
   title1: {
-    borderTopWidth: 1,
+    // borderTopWidth: 2,
+    borderTopColor: '#D3D3D3',
     backgroundColor: '#5d78ff',
-    height: 30,
+    paddingVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -499,7 +669,7 @@ const styles = StyleSheet.create({
   },
   nguoiyeucau: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
     // backgroundColor: 'green',
   },
@@ -522,15 +692,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5d78ff',
     justifyContent: 'space-between',
     alignItems: 'center',
-    elevation: 10,
-    shadowOffset: {width: 0, height: 10},
-    shadowOpacity: 0.2,
-    position: 'relative',
     flexDirection: 'row',
-    width: width,
     height: FontSize.Height(7),
-    paddingHorizontal: 15,
-    // borderBottomWidth: 1,
+    paddingHorizontal: 10,
   },
   headerStyle: {
     fontSize: 25,

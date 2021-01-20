@@ -112,16 +112,14 @@ export class DetailItem extends Component {
           })
         }
         style={styles.touchable}>
-        <View style={styles.viewdetailitem}>
-          <Text style={styles.detail_item_tieude}>
-            {this.props.item.TenLoaiYeuCau}
+        <Text style={styles.detail_item_tieude}>
+          {this.props.item.TenLoaiYeuCau}
+        </Text>
+        {this.props.item.MoTa == '' ? null : (
+          <Text style={styles.detail_item_mota}>
+            Mô tả: {this.props.item.MoTa}
           </Text>
-          {this.props.item.MoTa == '' ? null : (
-            <Text style={styles.detail_item_mota}>
-              Mô tả: {this.props.item.MoTa}
-            </Text>
-          )}
-        </View>
+        )}
       </TouchableOpacity>
     );
   }
@@ -143,6 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   background: {backgroundColor: 'red'},
+
   title: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,6 +160,9 @@ const styles = StyleSheet.create({
     color: '#696969',
   },
   touchable: {
+    height: 50,
+    justifyContent: 'center',
+    // alignItems: 'center',
     marginVertical: 2,
     borderBottomWidth: 2,
     borderBottomColor: '#CFCFCF',

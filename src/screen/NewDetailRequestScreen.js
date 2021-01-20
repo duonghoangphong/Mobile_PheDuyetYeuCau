@@ -28,7 +28,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import SelectMultiple from 'react-native-select-multiple';
 import CheckBox from '@react-native-community/checkbox';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import ImagePickerCrop from 'react-native-image-crop-picker';
 import DocumentPicker from 'react-native-document-picker';
 import RadioForm, {
@@ -47,7 +47,7 @@ export default class SearchScreen extends Component {
     this.state = {
       data: [],
       arrayPost: [],
-      tenyeucau: 'Ohong lam nay!',
+      tenyeucau: 'Phong lam nay!',
     };
   }
 
@@ -56,10 +56,10 @@ export default class SearchScreen extends Component {
       'Id_LoaiYeuCau',
       this.props.route.params.temp + '',
     );
+    console.log(temp);
     this.setState({data: temp});
   };
   setArrayPost = async (array) => {
-    console.log('==> test 1: ', array);
     this.setState({arrayPost: array});
   };
   guiYeuCau = async () => {
@@ -112,6 +112,7 @@ export default class SearchScreen extends Component {
               }}></Image>
           </TouchableOpacity>
         </View>
+        <View></View>
         <View style={[styles.viewdetailitem]}>
           <Text style={[styles.detail_item_tieude]}>Tên yêu cầu</Text>
           <TextInput

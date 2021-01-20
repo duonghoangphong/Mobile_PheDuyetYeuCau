@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 import React, {Component} from 'react';
-import {View, Text, Switch, Image} from 'react-native';
+import {View, Text, Switch, Image, Animated} from 'react-native';
 
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
@@ -32,11 +32,13 @@ import SearchScreen from './SearchScreen';
 import NotificationScreen from './NotificationScreen';
 import InformationScreen from '../screen/InformationScreen';
 import SettingScreen from '../screen/SettingScreen';
+import getDSThongBao from '../apis/getDSThongBao';
+import {ROOTGlobal} from '../app/data/dataGlobal';
+import {Alert} from 'react-native';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
-
 export default class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -45,6 +47,7 @@ export default class Main extends React.Component {
       token: {},
     };
   }
+
   componentDidMount() {
     this.data();
   }
@@ -99,88 +102,140 @@ export default class Main extends React.Component {
     );
   }
 }
-const abc = () => {
-  return (
-    <Tab.Navigator
-      initialRouteName="Home"
-      screenOptions={({route}) => ({
-        tabBarLabel: route.name == 'Search' ? 'New request' : route.name,
-        tabBarIcon: ({focused, color, size}) => {
-          switch (route.name) {
-            case 'Home':
-              return (
-                <Image
-                  source={require('../assets/icon_home.png')}
-                  style={{
-                    position: 'absolute',
-                    height: focused ? 50 : 25,
-                    width: focused ? 50 : 25,
-                    tintColor: focused ? 'orange' : 'gray',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}></Image>
-              );
-              break;
-            case 'Information':
-              return (
-                <Image
-                  source={require('../assets/icon_user.png')}
-                  style={{
-                    height: focused ? 50 : 25,
-                    width: focused ? 50 : 25,
-                    tintColor: focused ? 'orange' : 'gray',
-                  }}></Image>
-              );
-              break;
-            case 'Setting':
-              return (
-                <Image
-                  source={require('../assets/icon_settings.png')}
-                  style={{
-                    height: focused ? 50 : 25,
-                    width: focused ? 50 : 25,
-                    tintColor: focused ? 'orange' : 'gray',
-                  }}></Image>
-              );
-              break;
-            case 'Search':
-              return (
-                <Image
-                  source={require('../assets/icon_add.png')}
-                  style={{
-                    height: focused ? 50 : 25,
-                    width: focused ? 50 : 25,
-                    tintColor: focused ? 'orange' : 'gray',
-                  }}></Image>
-              );
-              break;
-            case 'Notification':
-              return (
-                <Image
-                  source={require('../assets/icon_notification.png')}
-                  style={{
-                    height: focused ? 50 : 25,
-                    width: focused ? 50 : 25,
-                    tintColor: focused ? 'orange' : 'gray',
-                  }}></Image>
-              );
-              break;
-            default:
-              break;
-          }
-        },
-      })}
-      tabBarOptions={{
-        activeTintColor: null,
-        inactiveTintColor: 'gray',
-      }}>
-      <Tab.Screen
-        name="Notification"
-        component={NotificationScreen}></Tab.Screen>
-      <Tab.Screen name="Search" component={SearchScreen}></Tab.Screen>
-      <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
-      <Tab.Screen name="Information" component={InformationScreen}></Tab.Screen>
-      <Tab.Screen name="Setting" component={SettingScreen}></Tab.Screen>
-    </Tab.Navigator>
-  );
-};
+export class abc extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      soluong: 0,
+    };
+    ROOTGlobal.loadThongBao = this.ham;
+  }
+  componentDidMount() {
+    this.ham();
+  }
+  ham = async (value) => {
+    let temp = await getDSThongBao();
+    var soluong = 0;
+    temp.map((item, index) => (item.DaDoc ? null : soluong++));
+    this.setState({soluong: soluong});
+    // setInterval(async () => {
+    //   let temp = await getDSThongBao();
+    //   var soluong = 0;
+    //   temp.map((item, index) => (item.DaDoc ? null : soluong++));
+    //   this.setState({soluong: soluong});
+    // }, 30000);
+  };
+  render() {
+    return (
+      <Tab.Navigator
+        initialRouteName="Home"
+        screenOptions={({route}) => ({
+          tabBarLabel: route.name == 'Search' ? 'New request' : route.name,
+          tabBarIcon: ({focused, color, size}) => {
+            switch (route.name) {
+              case 'Home':
+                return (
+                  <Image
+                    source={require('../assets/icon_home.png')}
+                    style={{
+                      position: 'absolute',
+                      height: focused ? 26 : 25,
+                      width: focused ? 26 : 25,
+                      tintColor: focused ? 'orange' : 'gray',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}></Image>
+                );
+                break;
+              case 'Information':
+                return (
+                  <Image
+                    source={require('../assets/icon_user.png')}
+                    style={{
+                      height: focused ? 26 : 25,
+                      width: focused ? 26 : 25,
+                      tintColor: focused ? 'orange' : 'gray',
+                    }}></Image>
+                );
+                break;
+              case 'Setting':
+                return (
+                  <Image
+                    source={require('../assets/icon_settings.png')}
+                    style={{
+                      height: focused ? 26 : 25,
+                      width: focused ? 26 : 25,
+                      tintColor: focused ? 'orange' : 'gray',
+                    }}></Image>
+                );
+                break;
+              case 'Search':
+                return (
+                  <Image
+                    source={require('../assets/icon_add.png')}
+                    style={{
+                      height: focused ? 26 : 25,
+                      width: focused ? 26 : 25,
+                      tintColor: focused ? 'orange' : 'gray',
+                    }}></Image>
+                );
+                break;
+              case 'Notification':
+                return (
+                  <View>
+                    <View>
+                      <Image
+                        source={require('../assets/icon_notification.png')}
+                        style={{
+                          height: focused ? 26 : 25,
+                          width: focused ? 26 : 25,
+                          tintColor: focused ? 'orange' : 'gray',
+                        }}></Image>
+                    </View>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        right: -10,
+                        top: -10,
+                        backgroundColor: 'orange',
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: 12,
+                        }}>
+                        {this.state.soluong}
+                      </Text>
+                    </View>
+                  </View>
+                );
+                break;
+              default:
+                break;
+            }
+          },
+        })}
+        tabBarOptions={{
+          // inactiveBackgroundColor: '#C7EAFF',
+          // activeBackgroundColor: 'yellow',
+          activeTintColor: 'orange',
+          inactiveTintColor: 'gray',
+        }}>
+        <Tab.Screen
+          name="Notification"
+          component={NotificationScreen}></Tab.Screen>
+        <Tab.Screen name="Search" component={SearchScreen}></Tab.Screen>
+        <Tab.Screen name="Home" component={HomeScreen}></Tab.Screen>
+        <Tab.Screen
+          name="Information"
+          component={InformationScreen}></Tab.Screen>
+        <Tab.Screen name="Setting" component={SettingScreen}></Tab.Screen>
+      </Tab.Navigator>
+    );
+  }
+}

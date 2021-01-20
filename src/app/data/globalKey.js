@@ -8,8 +8,9 @@ const keyFlight = {
 };
 
 export const nGlobalKeys = {
-  lang: 'lang',
   loginToken: 'loginToken',
+  onesignalToken: 'onesignalToken',
+  lang: 'lang',
   HoTen: 'HoTen',
   GioiTinh: 'GioiTinh',
   rowId: 'rowId',

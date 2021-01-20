@@ -9,7 +9,7 @@ export default class App extends Component {
     OneSignal.setLogLevel(6, 0);
 
     // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID.
-    OneSignal.init('66e2e902-edfb-44e0-9b64-5e5ef8b494a0', {
+    OneSignal.init('56a59c68-60c2-4afa-adc9-7edd566bfa5a', {
       kOSSettingsKeyAutoPrompt: false,
       kOSSettingsKeyInAppLaunchURL: false,
       kOSSettingsKeyInFocusDisplayOption: 2,
@@ -17,7 +17,7 @@ export default class App extends Component {
     OneSignal.inFocusDisplaying(2); // Controls what should happen if a notification is received while the app is open. 2 means that the notification will go directly to the device's notification center.
 
     // The promptForPushNotifications function code will show the iOS push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission (See step below)
-    OneSignal.promptForPushNotificationsWithUserResponse(myiOSPromptCallback);
+    OneSignal.promptForPushNotificationsWithUserResponse();
 
     OneSignal.addEventListener('received', this.onReceived);
     OneSignal.addEventListener('opened', this.onOpened);
@@ -47,7 +47,7 @@ export default class App extends Component {
     return (
       <View>
         <Text>aaaa</Text>
-        <TouchableOpacity onPress={() => sendNotification('123')}>
+        <TouchableOpacity>
           <Text>dfsjkdslkfjdsjfsdkfsd</Text>
         </TouchableOpacity>
       </View>
@@ -55,44 +55,7 @@ export default class App extends Component {
   }
 }
 
-var sendNotification = function (data) {
-  var headers = {
-    'Content-Type': 'application/json; charset=utf-8',
-    Authorization: 'Basic NGEwMGZmMjItY2NkNy0xMWUzLTk5ZDUtMDAwYzI5NDBlNjJj',
-  };
-
-  var options = {
-    host: 'onesignal.com',
-    port: 443,
-    path: '/api/v1/notifications',
-    method: 'POST',
-    headers: headers,
-  };
-
-  var https = require('https');
-  var req = https.request(options, function (res) {
-    res.on('data', function (data) {
-      console.log('Response:');
-      console.log(JSON.parse(data));
-    });
-  });
-
-  req.on('error', function (e) {
-    console.log('ERROR:');
-    console.log(e);
-  });
-
-  req.write(JSON.stringify(data));
-  req.end();
-};
-
-var message = {
-  app_id: '66e2e902-edfb-44e0-9b64-5e5ef8b494a0',
-  contents: {en: 'English Message'},
-  included_segments: ['Subscribed Users'],
-};
-
-sendNotification(message);
-function myiOSPromptCallback(permission) {
-  // do something with permission value
-}
+// sendNotification(message);
+// function myiOSPromptCallback(permission) {
+//   // do something with permission value
+// }

@@ -1,6 +1,7 @@
 package com.mobile_pheduyetyeucau;
 
 import com.facebook.react.ReactActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends ReactActivity {
 

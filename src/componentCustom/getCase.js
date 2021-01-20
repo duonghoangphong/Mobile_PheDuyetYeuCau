@@ -28,7 +28,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import SelectMultiple from 'react-native-select-multiple';
 import CheckBox from '@react-native-community/checkbox';
-import ImagePicker from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import ImagePickerCrop from 'react-native-image-crop-picker';
 import DocumentPicker from 'react-native-document-picker';
 import RadioForm, {
@@ -66,7 +66,7 @@ class Case5 extends Component {
     return (
       <View
         style={{
-          minHeight: this.state.isOpen ? 60 * this.state.mang.length : 0,
+          minHeight: this.state.isOpen ? 50 * this.state.mang.length : 0,
         }}>
         <DropDownPicker
           onOpen={() => {
@@ -82,7 +82,7 @@ class Case5 extends Component {
           onClose={() => {
             this.setState({isOpen: false});
           }}
-          dropDownStyle={{backgroundColor: 'red', position: 'absolute'}}
+          dropDownStyle={{backgroundColor: 'gray', position: 'absolute'}}
           onChangeItem={(item) => {
             this.setState({
               value: item.value,

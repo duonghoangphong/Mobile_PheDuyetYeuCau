@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, TextInput} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {
@@ -23,17 +23,44 @@ import LoginScreen from './src/screen/LoginScreen';
 import RegisterScreen from './src/screen/RegisterScreen';
 import NewDetailRequestScreen from './src/screen/NewDetailRequestScreen';
 import Main from './src/screen/Main';
-import FlashMessage from 'react-native-flash-message';
+import FlashMessage, {
+  showMessage,
+  hideMessage,
+} from 'react-native-flash-message';
 import SearchScreen from './src/screen/SearchScreen';
 import Modal_Fitter from './src/componentCustom/Modal/Modal_Fitter';
-
+import {appConfig} from './src/app/Config';
+import OneSignal from 'react-native-onesignal';
+import Modal_ThongKe from './src/componentCustom/Modal/Modal_ThongKe';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+import Utils from './src/app/Utils';
 const Stack = createStackNavigator();
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
+
+    Text.defaultProps = Text.defaultProps || {};
+    Text.defaultProps.allowFontScaling = false;
+    TextInput.defaultProps = TextInput.defaultProps || {};
+    TextInput.defaultProps.allowFontScaling = false;
+    Text.defaultProps = Text.defaultProps || {};
+    Text.defaultProps.allowFontScaling = false;
+    TextInput.defaultProps = TextInput.defaultProps || {};
+    TextInput.defaultProps.autoCapitalize = 'none';
+    TextInput.defaultProps.autoCorrect = false;
+    TextInput.defaultProps.spellCheck = false;
+    KeyboardAwareScrollView.defaultProps =
+      KeyboardAwareScrollView.defaultProps || {};
+    KeyboardAwareScrollView.defaultProps.keyboardShouldPersistTaps = 'handled';
   }
   render() {
+    // const deeplinking = {
+    //   prefixes: ['myapp://', 'https://myapp.com'],
+    //   Home: 'HomePath',
+    //   Details: {path: 'DetailsPath'},
+    // };
+
     return (
       <NavigationContainer>
         <Stack.Navigator
@@ -70,6 +97,9 @@ export default class App extends React.Component {
           <Stack.Screen
             name="NewDetailRequest"
             component={NewDetailRequestScreen}></Stack.Screen>
+          <Stack.Screen
+            name="Modal_ThongKe"
+            component={Modal_ThongKe}></Stack.Screen>
         </Stack.Navigator>
         <FlashMessage position="top" style={{borderRadius: 10}} />
       </NavigationContainer>

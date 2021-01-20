@@ -13,6 +13,8 @@ const ROOTGlobal = {
   datafacility: {HOT: [], ROO: []},
 
   loadDSThongBao: () => {},
+  loadDSHome: () => {},
+  loadThongBao: () => {},
 };
 
 // -- Các hàm xử lý thao tác với biến gốc ROOTGlobal

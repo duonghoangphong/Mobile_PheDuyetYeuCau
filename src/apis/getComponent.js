@@ -11,8 +11,12 @@ export default function getComponent(id, title, value) {
     case '1':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title}</Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text style={styles.tieude} numberOfLines={1}>
+            {title}
+          </Text>
           <Text>{value.slice(2, -2)}</Text>
         </View>
       );
@@ -20,8 +24,12 @@ export default function getComponent(id, title, value) {
     case '2':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text style={styles.tieude} numberOfLines={1}>
+            {title}{' '}
+          </Text>
           <Text>{value.slice(2, -2)}</Text>
         </View>
       );
@@ -29,8 +37,12 @@ export default function getComponent(id, title, value) {
     case '3':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -38,8 +50,12 @@ export default function getComponent(id, title, value) {
     case '4':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value.slice(2, -2)}</Text>
         </View>
       );
@@ -47,8 +63,12 @@ export default function getComponent(id, title, value) {
     case '5':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -56,8 +76,12 @@ export default function getComponent(id, title, value) {
     case '6':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -65,17 +89,25 @@ export default function getComponent(id, title, value) {
     case '7':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
-          <Text>{value.slice(2, -2)}</Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}
+          </Text>
+          <Text>{value.slice(2, -2) == 'False' ? 'Không' : 'Có'}</Text>
         </View>
       );
       break;
     case '8':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value == 'False' ? 'Không' : 'Có'}</Text>
         </View>
       );
@@ -83,8 +115,12 @@ export default function getComponent(id, title, value) {
     case '9':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -92,8 +128,12 @@ export default function getComponent(id, title, value) {
     case '10':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -101,8 +141,12 @@ export default function getComponent(id, title, value) {
     case '11':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
           <Text>aasa</Text>
         </View>
@@ -111,9 +155,11 @@ export default function getComponent(id, title, value) {
     case '12':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
-          <Text style={{width: 150}} numberOfLines={1}>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text style={styles.tieude}>{title} </Text>
+          <Text numberOfLines={1} style={{width: 150}} numberOfLines={1}>
             {JSON.parse(value.slice(1, -1)).filename}
           </Text>
           <Image
@@ -125,8 +171,12 @@ export default function getComponent(id, title, value) {
     case '13':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text numberOfLines={1} style={styles.tieude}>
+            {title}{' '}
+          </Text>
           <Text>{value}</Text>
         </View>
       );
@@ -134,8 +184,10 @@ export default function getComponent(id, title, value) {
     case '14':
       return (
         <View style={styles.case3}>
-          <Text style={{width: 135}}>{title} </Text>
-          <Text> : </Text>
+          <Image
+            source={require('../assets/icon_next.png')}
+            style={styles.hinh}></Image>
+          <Text style={styles.tieude}>{title} </Text>
           <Text style={{width: 150}} numberOfLines={1}>
             {JSON.parse(value.slice(1, -1)).filename}
           </Text>
@@ -153,6 +205,17 @@ const styles = StyleSheet.create({
   case3: {
     flexDirection: 'row',
     marginLeft: 10,
+    marginVertical: 3,
+    alignItems: 'center',
     // justifyContent: 'space-between',
+  },
+  tieude: {
+    width: 150,
+  },
+  hinh: {
+    width: 12,
+    height: 12,
+    tintColor: 'gray',
+    marginRight: 5,
   },
 });

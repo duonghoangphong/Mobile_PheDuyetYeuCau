@@ -24,8 +24,11 @@ import {ROOTGlobal, AppsetGlobal} from '../app/data/dataGlobal';
 import {connected} from '../apis/realtime';
 import {thongBaoConnected} from '../apis/getThongBao';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import postOneSignalID from '../apis/postOneSignalID';
 const background = require('../assets/background.jpg');
 const logo = require('../assets/logo.png');
+import OneSignal from 'react-native-onesignal';
+import {appConfig} from '../app/Config';
 
 const PhanTieuDe = () => {
   return (
@@ -83,7 +86,68 @@ export default class DangNhap extends React.Component {
       hidePass: true,
       TaiKhoan: 'phong@test',
       MatKhau: '12345678',
+      userID: '',
     };
+    OneSignal.setLogLevel(6, 0);
+
+    // Replace 'YOUR_ONESIGNAL_APP_ID' with your OneSignal App ID.
+    OneSignal.init(
+      // appConfig.onesignalID,
+      // '58969a21-77fb-4818-a564-239691818f54',
+      '7c34f9c4-f12b-4335-a0f8-4136b917414a',
+      {
+        kOSSettingsKeyAutoPrompt: false,
+        kOSSettingsKeyInAppLaunchURL: false,
+        kOSSettingsKeyInFocusDisplayOption: 2,
+      },
+    );
+    OneSignal.inFocusDisplaying(2); // Controls what should happen if a notification is received while the app is open. 2 means that the notification will go directly to the device's notification center.
+
+    // The promptForPushNotifications function code will show the iOS push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission (See step below)
+    OneSignal.promptForPushNotificationsWithUserResponse();
+
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    OneSignal.addEventListener('ids', this.onIds);
+    OneSignal.addEventListener('ids', this.abc);
+  }
+  componentWillUnmount() {
+    OneSignal.removeEventListener('received', this.onReceived);
+    OneSignal.removeEventListener('opened', this.onOpened);
+    // OneSignal.removeEventListener('ids', this.onIds);
+  }
+  abc = async (a) => {
+    console.log(a);
+    this.setState({userID: a.userId});
+    await Utils.nsetStore(nGlobalKeys.onesignalToken, a.userId);
+    console.log('==>>>>', this.state.userID);
+  };
+  onReceived(notification) {
+    console.log('=> onReceived: ', notification);
+    // showMessage({
+    //   message: 'OnReceived !',
+    //   type: 'warning',
+    // });
+  }
+
+  onOpened(openResult) {
+    console.log('=> onOpened: ', openResult);
+    // Utils.goscreen(this, 'Details', {
+    //   temp: openResult.notification.payload.additionalData.data,
+    // });
+    // this.props.navigation.navigate('Modal_ThongKe');
+    // console.log('Message: ', openResult.notification.payload.body);
+    // console.log('Data: ', openResult.notification.payload.additionalData);
+    // console.log('isActive: ', openResult.notification.isAppInFocus);
+    // console.log('openResult: ', openResult);
+
+    showMessage({
+      message: 'onOpened !',
+      type: 'info',
+    });
+  }
+  onIds(device) {
+    console.log('Device info: ', device);
   }
   dangNhap = async () => {
     var username = this.state.TaiKhoan;
@@ -93,16 +157,29 @@ export default class DangNhap extends React.Component {
       'a',
     );
     if (temp.status == 1) {
+      showMessage({
+        message: 'Đăng nhập thành công !',
+        type: 'success',
+      });
       this.setState({data: temp});
       Utils.nsetStore(nGlobalKeys.loginToken, temp.data.Token);
       Utils.setGlobal(ROOTGlobal.loginToken, temp.data.Token);
       Utils.nlog('==>Token: ', await Utils.ngetStore(nGlobalKeys.loginToken));
+      Utils.nlog(
+        '==>OneSignal Token: ',
+        await Utils.ngetStore(nGlobalKeys.onesignalToken),
+      );
+
+      thongBaoConnected(this.props, temp.data.Token);
+
+      let abs = {};
+      abs['devicestoken'] = this.state.userID;
+      abs['IsLogout'] = false;
+      let a = await postOneSignalID(abs);
       this.props.navigation.replace('Main');
-      connected(temp.data.Token);
-      // thongBaoConnected(temp.data.Token);
+      // connected(temp.data.Token);
     } else {
       this.setState({data: []});
-      n;
       showMessage({
         message: 'Sai tài khoản hoặc mật khẩu !',
         type: 'danger',
